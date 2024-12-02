@@ -15,14 +15,14 @@ print '---'."\n\n";
 
 # CONFIG
 
-my($SERVER_IP) = '127.0.0.1';
-my($SERVER_PORT) = '1337';
+my $SERVER_IP = '127.0.0.1';
+my $SERVER_PORT = '1337';
 
 # /CONFIG
 
 
 
-my($client_request) = 'This should generate an <undefined client request> response.';
+my $client_request = 'This should generate an <undefined client request> response.';
 while (1) {
 	ComCycle($client_request);
 	print 'New request:';
@@ -37,10 +37,9 @@ exit;
 
 sub ComCycle {
 	my($client_request) = @_;
-	my($client_socket,$client_req_size,$server_response);
 
 	# create a connecting socket
-	$client_socket = new IO::Socket::INET (
+	my $client_socket = new IO::Socket::INET (
 		PeerHost => $SERVER_IP,
 		PeerPort => $SERVER_PORT,
 		Proto => 'tcp',
@@ -49,17 +48,15 @@ sub ComCycle {
 	print '  Connected to '.$SERVER_IP.':'.$SERVER_PORT;
 
 	# data to send to a server
-	$client_req_size = $client_socket->send($client_request);
+	my $client_req_size = $client_socket->send($client_request);
 	# Finnished writing
 	$client_socket->shutdown(SHUT_WR);
 	print ', sent data of length '.$client_req_size."\n";
 	print '['.$client_request.']'."\n";
 
 	# receive a response of up to 4096 characters from server
-	$server_response = '';
-	$client_socket->recv($server_response, 4096);
-	my($data,$headers,$content);
-	($headers,$content) = split(/\r\n\r\n/,$server_response,2);
+	$client_socket->recv(my $server_response, 4096);
+	my($headers, $content) = split(/[\r\n]+/, $server_response,2);
 
 	print '  Response:'."\n";
 	print '['.$server_response.']'."\n";
